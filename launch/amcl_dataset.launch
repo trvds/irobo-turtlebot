@@ -1,0 +1,52 @@
+<launch>
+  <!-- Arguments -->
+  <arg name="model" default="waffle_pi"/>
+  <arg name="bag_name" default="fixed_slam_easy"/>
+  <arg name="map_file" default="$(find turtlebot3_datasets)/data/map.yaml" />
+
+  <!-- Turtlebot3 -->
+  <include file="$(find turtlebot3_bringup)/launch/turtlebot3_remote.launch">
+    <arg name="model" value="$(arg model)" />
+  </include>
+
+  <!-- Map server -->
+  <node pkg="map_server" name="map_server" type="map_server" args="$(arg map_file)" />
+
+  <!-- TF -->
+  <node pkg="tf2_ros" type="static_transform_publisher" name="tf2_map2odom" required="true"
+    args="0 0 0 0 0 0 map odom"/>
+  <node pkg="tf2_ros" type="static_transform_publisher" name="tf2_mocap2odom" 
+    args="0.935 1.34 -0.023 0.001 -0.003 0.737 0.676 mocap map"/>
+
+  <!-- ROSBAG -->
+  <param name="/use_sim_time" value="true"/>
+  <node pkg="rosbag" type="play" name="rosbag_player" 
+          args="--clock $(find turtlebot3_datasets)/data/$(arg bag_name).bag"/>
+
+  <!-- AMCL -->
+  <node pkg="amcl" type="amcl" name="amcl">
+      <param name="min_particles" value="500" />
+      <param name="max_particles" value="5000" />
+      <param name="odom_frame_id" value="odom" />
+      <param name="base_frame_id" value="base_footprint" />
+  </node>
+
+  <!-- Groundtruth path -->
+  <node pkg="hector_trajectory_server" type="hector_trajectory_server" name="mocap_trajectory_server">
+    <param name="source_frame_name" value="mocap_laser_link"/>
+    <param name="trajectory_update_rate" value="60"/>
+    <param name="trajectory_publish_rate" value="60"/>
+    <remap from="trajectory" to="mocap_trajectory"/>
+  </node>
+
+  <!-- Estimated path -->
+  <node pkg="hector_trajectory_server" type="hector_trajectory_server" name="localization_trajectory_server">
+    <param name="source_frame_name" value="base_scan"/>
+    <param name="trajectory_update_rate" value="30"/>
+    <param name="trajectory_publish_rate" value="30"/>
+  </node>
+
+  <!-- rviz -->
+  <node pkg="rviz" type="rviz" name="rviz" required="true" args="-d $(find irobo-turtlebot)/rviz/localization_dataset.rviz"/>  
+
+</launch>
