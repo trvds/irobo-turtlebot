@@ -8,6 +8,7 @@
   <!-- Example:  -->
   <!-- <maintainer email="jane.doe@example.com">Jane Doe</maintainer> -->
   <maintainer email="tiagovsilva@tecnico.ulisboa.pt">Tiago Vieira da Silva</maintainer>
+  <maintainer email="edson.da.veiga@tecnico.ulisboa.pt">Edson Fernando Cabral da Veiga</maintainer>
 
 
   <!-- One license tag required, multiple allowed, one license per tag -->
@@ -27,6 +28,7 @@
   <!-- Example: -->
   <!-- <author email="jane.doe@example.com">Jane Doe</author> -->
   <author email="tiagovsilva@tecnico.ulisboa.pt">Tiago Vieira da Silva</author>
+  <author email="edson.da.veiga@tecnico.ulisboa.pt">Edson Fernando Cabral da Veiga</author>
 
 
   <!-- The *depend tags are used to specify dependencies -->
