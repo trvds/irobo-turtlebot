@@ -2,7 +2,7 @@
   <!-- Arguments -->
   <arg name="model" default="$(env TURTLEBOT3_MODEL)" doc="model type [burger, waffle, waffle_pi]"/>
   <arg name="bag_name" default="LSDC4_1st_run"/>
-  <arg name="map_file" default="$(find turtlebot_sim)/data/LSDC4.yaml"/>
+  <arg name="map_file" default="$(find irobo-turtlebot)/data/LSDC4.yaml"/>
   <arg name="open_rviz" default="true"/>
   <arg name="move_forward_only" default="false"/>
   <arg name="scan_topic"     default="scan"/>
@@ -66,15 +66,15 @@
   <!-- ROSBAG -->
   <param name="/use_sim_time" value="true"/>
   <node pkg="rosbag" type="play" name="rosbag_player"
-          args="--clock --pause -r 40 $(find turtlebot_sim)/data/$(arg bag_name).bag"/>
+          args="--clock --pause -r 40 $(find irobo-turtlebot)/data/$(arg bag_name).bag"/>
 
     <!-- Estimated path -->
-  <node pkg="turtlebot_sim" type="pose_cov_to_path.py" name="pose_cov_to_path" required="true" />
+  <node pkg="irobo-turtlebot" type="pose_cov_to_path.py" name="pose_cov_to_path" required="true" />
 
   <!-- rviz -->
   <group if="$(arg open_rviz)">
     <node pkg="rviz" type="rviz" name="rviz" required="true"
-          args="-d $(find turtlebot_sim)/rviz/turtle_sim_amcl.rviz"/>
+          args="-d $(find irobo-turtlebot)/rviz/localization_dataset.rviz"/>
 
   </group>
 </launch>
