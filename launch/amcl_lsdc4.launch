@@ -68,8 +68,12 @@
   <node pkg="rosbag" type="play" name="rosbag_player"
           args="--clock --pause -r 40 $(find irobo-turtlebot)/data/$(arg bag_name).bag"/>
 
-    <!-- Estimated path -->
-  <node pkg="irobo-turtlebot" type="pose_cov_to_path.py" name="pose_cov_to_path" required="true" />
+  <!-- Estimated path -->
+  <node pkg="hector_trajectory_server" type="hector_trajectory_server" name="localization_trajectory_server">
+    <param name="source_frame_name" value="base_scan"/>
+    <param name="trajectory_update_rate" value="30"/>
+    <param name="trajectory_publish_rate" value="30"/>
+  </node>
 
   <!-- rviz -->
   <group if="$(arg open_rviz)">
