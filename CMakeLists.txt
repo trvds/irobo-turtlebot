@@ -93,6 +93,6 @@ target_link_libraries(${PROJECT_NAME}
 
 ## Mark executable scripts (Python etc.) for installation
 catkin_install_python(PROGRAMS
-   config/calculate_error.py
+   src/calculate_error.py
    DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
  )
