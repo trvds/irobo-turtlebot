@@ -25,7 +25,7 @@
 
   <!-- EKF robot localisation -->
   <node pkg="robot_localization" type="ekf_localization_node" name="robot_localization_ekf" clear_params="true" >
-    <rosparam command="load" file="$(find turtlebot3_datasets)/params/ekf_params.yaml" />
+    <rosparam command="load" file="$(find turtlebot3_datasets)/config/ekf_params.yaml" />
   </node>
 
   <!-- Groundtruth path -->
