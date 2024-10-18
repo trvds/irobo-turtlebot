@@ -15,7 +15,7 @@
   <node pkg="map_server" name="map_server" type="map_server" args="$(arg map_file)"/>
 
   <!-- AMCL -->
-  <include file="$(find turtlebot3_navigation)/launch/amcl.launch">
+  <include file="$(find irobo-turtlebot)/launch/amcl.launch">
     <arg name="initial_pose_x" default="0.0"/>
     <arg name="initial_pose_y" default="0.0"/>
     <arg name="initial_pose_a" default="0.0"/>
@@ -41,5 +41,5 @@
   </node>
 
   <!-- rviz -->
-  <node pkg="rviz" type="rviz" name="rviz" required="true" args="-d $(find rrt_planner)/rviz/rrt_turtlebot_sim.rviz"/>
+  <node pkg="rviz" type="rviz" name="rviz" required="true" args= "-d $(find irobo-turtlebot)/rviz/rrt_turtlebot_sim.rviz"/>
 </launch>

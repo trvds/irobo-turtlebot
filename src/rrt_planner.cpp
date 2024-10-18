@@ -3,7 +3,8 @@
 
 namespace rrt_planner {
 
-    RRTPlanner::RRTPlanner(costmap_2d::Costmap2DROS *costmap,
+
+    RRTPlanner::RRTPlanner(costmap_2d::Costmap2DROS *costmap, 
             const rrt_params& params) : params_(params), collision_dect_(costmap) {
 
         costmap_ = costmap->getCostmap();
@@ -41,7 +42,7 @@ namespace rrt_planner {
             }
 
             if(k > params_.min_num_nodes) {
-
+                
                 if(computeDistance(p_new, goal_) <= params_.goal_tolerance){
                     return true;
                 }
@@ -52,37 +53,34 @@ namespace rrt_planner {
     }
 
     int RRTPlanner::getNearestNodeId(const double *point) {
-
+	double min_dist = std::numeric_limits<double>::max();
+	int nearest_node_id = -1;
+	
+	for(size_t i = 0; i < nodes_.size();i++) {
+	   double dist = computeDistance(nodes_[i].pos,point);
+	   if(dist < min_dist){
+	      min_dist = dist;
+	      nearest_node_id = i;
+	   }
+	}
+	
+	return nearest_node_id;
         /**************************
          * Implement your code here
          **************************/
-         double min = 100000,aux = 100000;
-         int id = -100;
-         for( int i = 0; i < nodes_.size(); i++){
-             aux = computeDistance(nodes_[i].pos,point);
-             if (aux < min){
-                 min = aux;
-                 id = i;
-             }
-         }
-         if(id == -100) id=0;
-         return id;
 
     }
 
     void RRTPlanner::createNewNode(const double* pos, int parent_node_id) {
 
-        //Node new_node;
-
+        Node new_node(pos, nodes_.size(),parent_node_id);
+        nodes_.emplace_back(new_node);
         /**************************
          * Implement your code here
          **************************/
 
-        //nodes_.emplace_back(new_node);
-
-        Node new_node(pos, nodes_.size(),parent_node_id);
-        nodes_.emplace_back(new_node);
-
+       
+        
     }
 
     double* RRTPlanner::sampleRandomPoint() {
@@ -90,37 +88,39 @@ namespace rrt_planner {
         /**************************
          * Implement your code here
          **************************/
-
-        //rand_point_[0] = // ... ;
-        //rand_point_[1] = // ... ;
-
-
-        rand_point_[0] = random_double_x.generate();
-        rand_point_[1] = random_double_y.generate();
-
+        double goal_region_radius = 5.0;
+	double bias_probability = 0.2;
+	if(random_double_x.generate() < bias_probability){
+	    ROS_INFO("Biasing towards goal");
+	    rand_point_[0] = goal_[0] + random_double_x.generate() * goal_region_radius - goal_region_radius / 2;
+	    rand_point_[1] = goal_[1] + random_double_y.generate() * goal_region_radius - goal_region_radius / 2;
+	}else{
+            rand_point_[0] = random_double_x.generate(); // ... ;
+            rand_point_[1] = random_double_y.generate(); // ... ;
+      	    ROS_INFO("Sampled Random Point (%f, %f)", rand_point_[0], rand_point_[1]);
+      	}
         return rand_point_;
     }
-
+    
+    
     double* RRTPlanner::extendTree(const double* point_nearest, const double* point_rand) {
 
         /**************************
          * Implement your code here
          **************************/
-
-        //candidate_point_[0] = // ... ;
-        //candidate_point_[1] = // ... ;
-
-       double vector[] = {0.0,0.0};
-       double norm = computeDistance(point_nearest,point_rand);
-
-       vector[0] = point_rand[0] - point_nearest[0];
-       vector[1] = point_rand[1] - point_nearest[1];
-
-
-       candidate_point_[0] = point_nearest[0] + params_.step*vector[0]/norm;
-       candidate_point_[1] = point_nearest[1] + params_.step*vector[1]/norm;
-
+	double direction[2] = { point_rand[0] - point_nearest[0], point_rand[1] - point_nearest[1] };
+	double norm = computeDistance(point_nearest, point_rand);
+	
+        candidate_point_[0] = point_nearest[0] + (direction[0] / norm) * params_.step;
+        candidate_point_[1] = point_nearest[1] + (direction[1] / norm) * params_.step;
+	ROS_INFO("Extending Tree: Nearest (%f,%f) -> New Point (%f,%f)",point_nearest[0],point_nearest[1],candidate_point_[0], candidate_point_[1]);
+      	
         return candidate_point_;
+    }
+    
+     
+    double RRTPlanner::computeDistance(const double*p1,const double*p2){
+       return std::sqrt(std::pow(p1[0]-p2[0],2) + std::pow(p1[1]-p2[1],2));
     }
 
     const std::vector<Node>& RRTPlanner::getTree() {

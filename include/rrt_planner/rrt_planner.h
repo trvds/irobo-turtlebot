@@ -74,6 +74,8 @@ namespace rrt_planner {
              * @brief Get the RRT tree.
              */
             const std::vector<Node>& getTree();
+            
+            double computeDistance(const double* point_a, const double* point_b);
 
             ~RRTPlanner() {};
 

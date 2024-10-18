@@ -33,7 +33,8 @@ namespace rrt_planner {
             global_frame_ = global_frame;
 
             ros::NodeHandle nh("~/" + name);         
-            nh.param("goal_tolerance", params_.goal_tolerance, 0.15);
+            nh.param("goal_tolerance", params_.goal_tolerance, 0.2);
+            nh.param("angle_tolerance", params_.goal_tolerance, 0.1);
             nh.param("rrt/step", params_.step, 0.15);
             nh.param("rrt/min_num_nodes", params_.min_num_nodes, 5000);
             nh.param("rrt/max_num_nodes", params_.max_num_nodes, 30000);

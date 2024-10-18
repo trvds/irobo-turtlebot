@@ -14,21 +14,18 @@ namespace rrt_planner {
     }
 
     bool CollisionDetector::inFreeSpace(const double* world_pos) {
-
-        /**************************
-         * Implement your code here
-         **************************/
-         unsigned int map_x, map_y;
-         if (!costmap_->worldToMap(world_pos[0], world_pos[1], map_x, map_y)) {
-             return false;
-         }
-         //costmap_2d::FREE_SPACE
-         if (costmap_->getCost(map_x,map_y) <= 80) {
-             return true;
-         } else {
-             return false;
-         }
-
+        unsigned int map_x, map_y;
+        if(!costmap_->worldToMap(world_pos[0],world_pos[1],map_x,map_y)){
+            ROS_WARN("World position is outside of the map bounds.");
+            return false;
+        }
+        
+        if(costmap_->getCost(map_x,map_y) < costmap_2d::INSCRIBED_INFLATED_OBSTACLE){
+            ROS_INFO("Checking free space at (%f, %f): cost= %d", world_pos[0],world_pos[1], costmap_->getCost(map_x,map_y));
+            return true;	
+        }else{
+        return false;
+        }
     }
 
     bool CollisionDetector::obstacleBetween(const double* point_a, const double* point_b) {
@@ -39,7 +36,7 @@ namespace rrt_planner {
             return ( !inFreeSpace(point_b) ) ? true : false;
 
         } else {
-
+            
             int num_steps = static_cast<int>(floor(dist/resolution_));
 
             double point_i[2];
@@ -50,7 +47,6 @@ namespace rrt_planner {
 
                 if ( !inFreeSpace(point_i) ) return true;
             }
-
             return false;
         }
 

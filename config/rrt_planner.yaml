@@ -1,6 +1,6 @@
 RRTPlannerROS: {
   goal_tolerance: 0.20,
-
+  angle_tolerance: 0.1,
   rrt: {
     step: 0.20,
     min_num_nodes: 200,

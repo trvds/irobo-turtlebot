@@ -35,6 +35,7 @@ include_directories(
   ${catkin_INCLUDE_DIRS}
 )
 
+message("Library being created: ${PROJECT_NAME}")
 add_library(${PROJECT_NAME}
   src/rrt_planner_ros.cpp
   src/rrt_planner.cpp
@@ -55,3 +56,21 @@ catkin_install_python(PROGRAMS
    src/calculate_error.py
    DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
  )
+
+ install(TARGETS ${PROJECT_NAME}
+  ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+  LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+  RUNTIME DESTINATION ${CATKIN_GLOBAL_BIN_DESTINATION}
+)
+
+install(DIRECTORY include /${PROJECT_NAME}/
+   DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
+)
+
+install(DIRECTORY launch maps param rviz
+  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
+)
+
+install(FILES rrt_planner_plugin.xml
+  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
+)
