@@ -71,19 +71,14 @@ int RRTPlanner::getNearestNodeId(const double *point) {
 
         Node new_node(pos, nodes_.size(),parent_node_id);
         nodes_.emplace_back(new_node);
-        /**************************
-         * Implement your code here
-         **************************/
 
-       
-        
     }
 
 double* RRTPlanner::sampleRandomPoint() {
     static const double goal_bias = 0.1;
     static const double goal_region_radius = 0.5;
 
-    if (random_double_x.generate() < goal_bias && random_double_y.generate() < goal_bias) {
+    if (random_double_x.generate() < goal_bias || random_double_y.generate() < goal_bias) {
         // Bias towards goal
         rand_point_[0] = goal_[0] + (random_double_x.generate() * 2 - 1) * goal_region_radius;
         rand_point_[1] = goal_[1] + (random_double_y.generate() * 2 - 1) * goal_region_radius;
