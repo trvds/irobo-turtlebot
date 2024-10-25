@@ -53,5 +53,7 @@ target_link_libraries(rrt_planner
 ## Mark executable scripts (Python etc.) for installation
 catkin_install_python(PROGRAMS
    src/calculate_error.py
+   src/cov_uncertainty.py
+   src/ground_truth_downsampler.py
    DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )

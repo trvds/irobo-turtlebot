@@ -76,6 +76,8 @@ plotter = ErrorPlotter()
 rospy.loginfo('Listening to frames and computing error, press Ctrl-C to stop')
 sleeper = rospy.Rate(10)  # Reduce rate to 10 Hz for better visualization
 
+last_plot_time = rospy.Time.now()  # Initialize last_plot_time
+
 try:
     while not rospy.is_shutdown():
         try:
@@ -86,9 +88,12 @@ try:
             eucl = get_errors(t)
             rospy.loginfo('Error (in mm): {:.2f}'.format(eucl * 1e3))
             
-            # Add point to the plot
-            plotter.add_point(rospy.Time.now(), eucl)
-            plotter.update_plot()
+            # Add point to the plot only if one second has passed
+            current_time = rospy.Time.now()
+            if (current_time - last_plot_time).to_sec() >= 1.0:  # Check if 1 second has passed
+                plotter.add_point(current_time, eucl)
+                plotter.update_plot()
+                last_plot_time = current_time  # Update the last plot time
         
         try:
             sleeper.sleep()
@@ -96,6 +101,11 @@ try:
             rospy.logwarn(e)
 except rospy.exceptions.ROSInterruptException:
     pass
+
+# Calculate and display the mean error
+if len(plotter.errors) > 0:
+    mean_error = numpy.mean(plotter.errors)
+    print(f"\nMean Error (in mm): {mean_error:.2f}")
 
 plt.ioff()
 plt.show()
