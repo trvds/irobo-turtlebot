@@ -13,20 +13,15 @@ namespace rrt_planner {
 
     }
 
-    bool CollisionDetector::inFreeSpace(const double* world_pos) {
-        unsigned int map_x, map_y;
-        if(!costmap_->worldToMap(world_pos[0],world_pos[1],map_x,map_y)){
-            ROS_WARN("World position is outside of the map bounds.");
-            return false;
-        }
-        
-        if(costmap_->getCost(map_x,map_y) < costmap_2d::INSCRIBED_INFLATED_OBSTACLE){
-            ROS_INFO("Checking free space at (%f, %f): cost= %d", world_pos[0],world_pos[1], costmap_->getCost(map_x,map_y));
-            return true;	
-        }else{
+ bool CollisionDetector::inFreeSpace(const double* world_pos) {
+    unsigned int map_x, map_y;
+    if(!costmap_->worldToMap(world_pos[0], world_pos[1], map_x, map_y)){
         return false;
-        }
     }
+    
+    unsigned char cost = costmap_->getCost(map_x, map_y);
+    return cost < costmap_2d::INSCRIBED_INFLATED_OBSTACLE;
+}
 
     bool CollisionDetector::obstacleBetween(const double* point_a, const double* point_b) {
 

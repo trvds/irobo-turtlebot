@@ -52,71 +52,59 @@ namespace rrt_planner {
         return false;
     }
 
-    int RRTPlanner::getNearestNodeId(const double *point) {
-	double min_dist = std::numeric_limits<double>::max();
-	int nearest_node_id = -1;
-	
-	for(size_t i = 0; i < nodes_.size();i++) {
-	   double dist = computeDistance(nodes_[i].pos,point);
-	   if(dist < min_dist){
-	      min_dist = dist;
-	      nearest_node_id = i;
-	   }
-	}
-	
-	return nearest_node_id;
-        /**************************
-         * Implement your code here
-         **************************/
-
+int RRTPlanner::getNearestNodeId(const double *point) {
+    double min_dist = std::numeric_limits<double>::max();
+    int nearest_node_id = -1;
+    
+    for(size_t i = 0; i < nodes_.size(); i++) {
+        double dist = computeDistance(nodes_[i].pos, point);
+        if(dist < min_dist){
+            min_dist = dist;
+            nearest_node_id = i;
+        }
     }
+    if(nearest_node_id == -1) nearest_node_id = 0;
+    return nearest_node_id;
+}
 
     void RRTPlanner::createNewNode(const double* pos, int parent_node_id) {
 
         Node new_node(pos, nodes_.size(),parent_node_id);
         nodes_.emplace_back(new_node);
-        /**************************
-         * Implement your code here
-         **************************/
 
-       
-        
     }
 
-    double* RRTPlanner::sampleRandomPoint() {
+double* RRTPlanner::sampleRandomPoint() {
+    static const double goal_bias = 0.1;
+    static const double goal_region_radius = 0.5;
 
-        /**************************
-         * Implement your code here
-         **************************/
-        double goal_region_radius = 5.0;
-	double bias_probability = 0.2;
-	if(random_double_x.generate() < bias_probability){
-	    ROS_INFO("Biasing towards goal");
-	    rand_point_[0] = goal_[0] + random_double_x.generate() * goal_region_radius - goal_region_radius / 2;
-	    rand_point_[1] = goal_[1] + random_double_y.generate() * goal_region_radius - goal_region_radius / 2;
-	}else{
-            rand_point_[0] = random_double_x.generate(); // ... ;
-            rand_point_[1] = random_double_y.generate(); // ... ;
-      	    ROS_INFO("Sampled Random Point (%f, %f)", rand_point_[0], rand_point_[1]);
-      	}
-        return rand_point_;
+    if (random_double_x.generate() < goal_bias || random_double_y.generate() < goal_bias) {
+        // Bias towards goal
+        rand_point_[0] = goal_[0] + (random_double_x.generate() * 2 - 1) * goal_region_radius;
+        rand_point_[1] = goal_[1] + (random_double_y.generate() * 2 - 1) * goal_region_radius;
+    } 
+    
+    return rand_point_;
+}
+    
+double* RRTPlanner::extendTree(const double* point_nearest, const double* point_rand) {
+    double direction[2] = {
+        point_rand[0] - point_nearest[0],
+        point_rand[1] - point_nearest[1]
+    };
+    double distance = computeDistance(point_nearest, point_rand);
+    
+    if (distance > params_.step) {
+        double scale = params_.step / distance;
+        candidate_point_[0] = point_nearest[0] + direction[0] * scale;
+        candidate_point_[1] = point_nearest[1] + direction[1] * scale;
+    } else {
+        candidate_point_[0] = point_rand[0];
+        candidate_point_[1] = point_rand[1];
     }
     
-    
-    double* RRTPlanner::extendTree(const double* point_nearest, const double* point_rand) {
-
-        /**************************
-         * Implement your code here
-         **************************/
-	double direction[2] = { point_rand[0] - point_nearest[0], point_rand[1] - point_nearest[1] };
-	double norm = computeDistance(point_nearest, point_rand);
-	
-        candidate_point_[0] = point_nearest[0] + (direction[0] / norm) * params_.step;
-        candidate_point_[1] = point_nearest[1] + (direction[1] / norm) * params_.step;
-	ROS_INFO("Extending Tree: Nearest (%f,%f) -> New Point (%f,%f)",point_nearest[0],point_nearest[1],candidate_point_[0], candidate_point_[1]);
-      	
-        return candidate_point_;
-    }
+    return candidate_point_;
+}
     
      
     double RRTPlanner::computeDistance(const double*p1,const double*p2){
