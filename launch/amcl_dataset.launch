@@ -25,8 +25,8 @@
 
   <!-- AMCL -->
   <node pkg="amcl" type="amcl" name="amcl">
-      <param name="min_particles" value="500" />
-      <param name="max_particles" value="5000" />
+      <param name="min_particles" value="5000" />
+      <param name="max_particles" value="2500" />
       <param name="odom_frame_id" value="odom" />
       <param name="base_frame_id" value="base_footprint" />
   </node>

@@ -12,6 +12,12 @@
   <!-- Map server -->
   <node pkg="map_server" name="map_server" type="map_server" args="$(arg map_file)" />
 
+  <!-- Ground truth downsampler -->
+  <node pkg="irobo-turtlebot" type="ground_truth_downsampler.py" name="ground_truth_downsampler" output="screen">
+    <param name="input_topic" value="/tf" />
+    <param name="output_topic" value="/downsampled_ground_truth" />
+  </node>
+
   <!-- TF -->
   <node pkg="tf2_ros" type="static_transform_publisher" name="tf2_map2odom" required="true"
     args="0 0 0 0 0 0 map odom"/>

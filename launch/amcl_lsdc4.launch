@@ -1,7 +1,7 @@
 <launch>
   <!-- Arguments -->
   <arg name="model" default="waffle_pi" />
-  <arg name="bag_name" default="LSDC4_2nd_run"/>
+  <arg name="bag_name" default="LSDC4_3rd_run"/>
   <arg name="map_file" default="$(find irobo-turtlebot)/data/LSDC4.yaml"/>
 
   <!-- Turtlebot3 -->
@@ -20,7 +20,7 @@
   <!-- AMCL -->
   <node pkg="amcl" type="amcl" name="amcl">
     <param name="min_particles"             value="500"/>   <!-- TODO experiment with -->
-    <param name="max_particles"             value="3000"/>  <!-- TODO experiment with -->
+    <param name="max_particles"             value="2000"/>  <!-- TODO experiment with -->
     <param name="initial_pose_a"            value="3.1419"/>
     <param name="odom_frame_id"             value="odom"/>
     <param name="base_frame_id"             value="base_footprint"/>
